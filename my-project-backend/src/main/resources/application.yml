@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: my-project-backend
+  security:
+    jwt:
+      key: abcdefg
+      expire: 7
