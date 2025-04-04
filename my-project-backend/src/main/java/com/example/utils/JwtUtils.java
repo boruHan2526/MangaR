@@ -38,10 +38,13 @@ public class JwtUtils {
     @Resource
     StringRedisTemplate template;
 
+    //↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+    //LogOut删除Token用（将Token放于Redis黑名单）
+
     public boolean invalidateJwt(String headerToken){
         String token = this.convertToken(headerToken);
         if(token == null) return false;
-        Algorithm algorithm = Algorithm.HMAC256(key);
+        Algorithm algorithm = Algorithm.HMAC256(key);   // 定义了用来签名和验证 JWT 的加密算法
         JWTVerifier jwtverifier = JWT.require(algorithm).build();
         try {
             DecodedJWT jwt = jwtverifier.verify(token);
@@ -57,13 +60,18 @@ public class JwtUtils {
             return false;
         Date now = new Date();
         long expire = Math.max(time.getTime() - now.getTime(), 0);   // 过期时间 - 当前时间
-        template.opsForValue().set(Const.JWT_BLACK_LIST + uuid, "", TimeUnit.MILLISECONDS.ordinal());
+        template.opsForValue().set(Const.JWT_BLACK_LIST + uuid, "", expire, TimeUnit.MILLISECONDS); // exipre 存储的时长，到达该时长后自动删除； TimeUnit.MILLISECONDS 它是 java.util.concurrent.TimeUnit 枚举类里的一个成员，代表 “毫秒” 这个单位。
+
+
         return true;
     }
 
     private boolean isInvalidToken(String uuid){
         return Boolean.TRUE.equals(template.hasKey(Const.JWT_BLACK_LIST + uuid));
     }
+
+    //↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+
 
 
     private String convertToken(String headerToken) {   // 这个方法的作用是 从 HTTP 头的 Authorization 字符串中提取 JWT 令牌。 ※Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
