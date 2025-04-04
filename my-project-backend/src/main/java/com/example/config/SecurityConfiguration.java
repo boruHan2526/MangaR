@@ -1,6 +1,7 @@
 package com.example.config;
 
 import com.example.entity.RestBean;
+
 import com.example.entity.vo.response.AuthorizeVO;
 import com.example.filter.JwtAuthorizeFilter;
 import com.example.utils.JwtUtils;
@@ -21,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * @author boruOrris
@@ -82,7 +84,15 @@ public class SecurityConfiguration {
     }
 
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter writer = response.getWriter();
+        String authorization = request.getHeader("Authorization");
+        if(utils.invalidateJwt(authorization)) {
+            writer.write(RestBean.success().asJsonString());
+        } else {
+            writer.write(RestBean.failure(400, "退出登录失败").toString());
+        }
     }
 
     public void onUnauthorized(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {

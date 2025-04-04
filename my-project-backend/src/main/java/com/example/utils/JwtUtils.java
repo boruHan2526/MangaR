@@ -6,7 +6,10 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.example.entity.Const;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author boruOrris
@@ -30,6 +35,37 @@ public class JwtUtils {
     @Value("${spring.security.jwt.expire}")
     int expire;
 
+    @Resource
+    StringRedisTemplate template;
+
+    public boolean invalidateJwt(String headerToken){
+        String token = this.convertToken(headerToken);
+        if(token == null) return false;
+        Algorithm algorithm = Algorithm.HMAC256(key);
+        JWTVerifier jwtverifier = JWT.require(algorithm).build();
+        try {
+            DecodedJWT jwt = jwtverifier.verify(token);
+            String id = jwt.getId(); // 注意这里取的是 withJWTId(UUID.randomUUID().toString()) 即UUID
+            return deleteToken(id, jwt.getExpiresAt());
+        } catch (JWTVerificationException e) {
+            return false;
+        }
+    }
+
+    private boolean deleteToken(String uuid, Date time){
+        if (this.isInvalidToken(uuid))
+            return false;
+        Date now = new Date();
+        long expire = Math.max(time.getTime() - now.getTime(), 0);   // 过期时间 - 当前时间
+        template.opsForValue().set(Const.JWT_BLACK_LIST + uuid, "", TimeUnit.MILLISECONDS.ordinal());
+        return true;
+    }
+
+    private boolean isInvalidToken(String uuid){
+        return Boolean.TRUE.equals(template.hasKey(Const.JWT_BLACK_LIST + uuid));
+    }
+
+
     private String convertToken(String headerToken) {   // 这个方法的作用是 从 HTTP 头的 Authorization 字符串中提取 JWT 令牌。 ※Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         if(headerToken == null || !headerToken.startsWith("Bearer "))
             return null;
@@ -43,6 +79,8 @@ public class JwtUtils {
         JWTVerifier jwtVerifier = JWT.require(algorithm).build();
         try{
             DecodedJWT verify = jwtVerifier.verify(token);  // jwtVerifier.verify(token) 解析 JWT，检查它是否 被正确签名。如果签名不匹配或 JWT 结构错误，会抛出 JWTVerificationException。
+            if(this.isInvalidToken(verify.getId()))
+                return null;
             Date expiresAt = verify.getExpiresAt(); // 检查 JWT 是否过期
             return new Date().after(expiresAt) ? null : verify; // 如果当前时间 已经 超过 JWT 过期时间，返回 null，表示令牌已失效。
         } catch (JWTVerificationException e) {
@@ -54,6 +92,7 @@ public class JwtUtils {
         Algorithm algorithm = Algorithm.HMAC256(key);
         Date expire = this.expireTime();
         return JWT.create()
+                .withJWTId(UUID.randomUUID().toString())
                 .withClaim("id", id)
                 .withClaim("name", username)
                 .withClaim("authorities", details.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList())
