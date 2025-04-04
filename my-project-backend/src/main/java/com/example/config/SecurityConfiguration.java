@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -74,17 +75,24 @@ public class SecurityConfiguration {
                 .build();
     }
 
-    // 👇 手动暴露 AuthenticationManager Bean（推荐）
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
-    }
-
     // 👇 密码加密器（你的 UserDetailsService 需要配合这个来校验密码）
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    // 👇 手动暴露 AuthenticationManager Bean（推荐）
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder builder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        // 通过 AuthenticationManagerBuilder，你可以配置不同的认证方式，例如基于数据库的用户认证，或者基于 JWT 的认证。
+        // getSharedObject 方法允许你访问 Spring Security 中一些已存在的共享对象。在这个方法中，我们使用它来获取 AuthenticationManagerBuilder，它是用来配置 AuthenticationManager 的辅助类。
+        builder.userDetailsService(accountService).passwordEncoder(passwordEncoder());
+        // 将我们自定义的 UserDetailsService（即 accountService）设置给 AuthenticationManagerBuilder。accountService 是我们用来加载用户信息的服务，它从数据库中查找用户并返回一个 UserDetails 对象。
+        // passwordEncoder(passwordEncoder())：将密码加密器（BCryptPasswordEncoder）设置给 AuthenticationManagerBuilder，这样系统会使用它来加密和验证用户输入的密码。
+        return builder.build(); // ✅ 这才是能调用 build 的地方 // build() 方法构建并返回配置好的 AuthenticationManager 实例，准备在整个应用中进行用户身份验证。
+    }
+
 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         response.setContentType("application/json");
