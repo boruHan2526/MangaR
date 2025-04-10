@@ -5,5 +5,5 @@ spring:
   application:
     name: my-project-backend
   profiles:
-    active: dev
+    active: prod
 

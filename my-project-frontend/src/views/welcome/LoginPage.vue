@@ -23,7 +23,7 @@
       </div>
     </div>
     <div style="margin-top: 50px">
-      <el-form v-model="form">
+      <el-form :model="form" :rules="rule" ref="formRef">
         <el-form-item>
           <el-input
             v-model="form.username"
@@ -37,7 +37,12 @@
           </el-input>
         </el-form-item>
         <el-form-item>
-          <el-input v-model="form.password" maxlength="20" placeholder="密码">
+          <el-input
+            v-model="form.password"
+            type="password"
+            maxlength="20"
+            placeholder="密码"
+          >
             <template #prefix>
               <el-icon><Lock /></el-icon>
             </template>
@@ -67,7 +72,9 @@
       </el-form>
     </div>
     <div style="margin-top: 40px">
-      <el-button style="width: 250px" type="success" plain>立即登录</el-button>
+      <el-button @click="userLogin" style="width: 250px" type="success" plain
+        >立即登录</el-button
+      >
     </div>
     <el-divider>
       <span style="font-size: 13px; color: grey">没有账号</span>
@@ -81,14 +88,33 @@
 </template>
 
 <script setup lang="ts">
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { User, Lock } from "@element-plus/icons-vue";
+import { login } from "@/net/index";
+import router from "@/router";
 
 const form = reactive({
   username: "",
   password: "",
   remember: false,
 });
+
+const rule = {
+  username: [{ required: true, message: "请输入用户名" }],
+  password: [{ required: true, message: "请输入密码" }],
+};
+
+const formRef = ref();
+
+function userLogin() {
+  formRef.value.validate((valid) => {
+    if (valid) {
+      login(form.username, form.password, form.remember, () =>
+        router.push("/index")
+      );
+    }
+  });
+}
 </script>
 
 <style></style>

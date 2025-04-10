@@ -29,10 +29,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class JwtUtils {
 
-    @Value("${spring.security.jwt.key}")
+    @Value("${security.jwt.key}")
     String key;
 
-    @Value("${spring.security.jwt.expire}")
+    @Value("${security.jwt.expire}")
     int expire;
 
     @Resource
