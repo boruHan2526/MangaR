@@ -20,6 +20,11 @@ const router = createRouter({
             path: '/index',
             name: 'index',
             component: () => import('@/views/indexView.vue')
+        },
+        {
+            path: '/post',
+            name: 'PostEditor',
+            component: () => import('@/views/PostEditor.vue')
         }
     ]
 })

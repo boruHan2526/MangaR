@@ -99,4 +99,14 @@ function unauthorized(){
                               //假设 takeAccessToken() 返回有效的令牌对象（即用户已授权）。那么 !takeAccessToken() 会把有效对象转换为 false，因为在 JavaScript 中，任何非空对象都被视为 true，而 ! 操作符将其反转为 false。
 }
 
-export {login, logout, get, post, unauthorized}
+// 获取全部Blogs
+function getBlogs(success, failure = defaultFailure) {
+    get('/api/blogs', success, failure)
+}
+
+// function getBlogsByCategory(category, success, failure = defaultFailure) {
+//     get(`/api/blogs/category/${category}`, success, failure)
+// }
+
+
+export {login, logout, get, post, unauthorized, getBlogs}

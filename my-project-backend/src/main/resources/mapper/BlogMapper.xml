@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.mapper.BlogMapper">
+
+    <!-- 查询所有Blog -->
+    <select id="findAll" resultType="Blog">
+        SELECT id, title, description, category, date, content
+        FROM db_blogs
+    </select>
+
+    <!-- 按照分类查询Blog -->
+    <select id="findByCategory" parameterType="String" resultType="Blog">
+        SELECT id, title, description, category, date, content
+        FROM db_blogs
+        WHERE category = #{category}
+    </select>
+
+</mapper>
