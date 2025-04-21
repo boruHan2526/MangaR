@@ -1,42 +1,44 @@
 <template>
-  <div class="post-editor">
-    <h2>发布新文章</h2>
-    <!-- 表单内容可以慢慢扩展 -->
-    <el-form label-position="top" label-width="100px">
-      <el-form-item label="标题">
-        <el-input v-model="title" placeholder="请输入文章标题" />
-      </el-form-item>
+  <div class="post-editor-container">
+    <div class="post-editor">
+      
+      <el-card class="form-card">
+        <!-- 头部 -->
+        <!-- 替换掉原来的 back-link 部分 -->
+        <el-button class="close-button" link @click="$router.push('/')">×</el-button>
 
-      <el-form-item label="分类">
-        <el-select v-model="category" placeholder="请选择分类">
-          <el-option label="生活" value="生活" />
-          <el-option label="技术" value="技术" />
-          <!-- 可根据需要添加更多分类 -->
-        </el-select>
-      </el-form-item>
+        <h1 class="page-title">新增文章</h1>
 
-      <el-form-item label="内容">
-        <!-- <el-input
-          v-model="content"
-          type="textarea"
-          rows="10"
-          placeholder="请输入文章内容"
-        /> -->
-        <RichTextEditor v-model="content"></RichTextEditor>
-        <!-- 相当于： <RichTextEditor :modelValue="content" @update:modelValue="val => content = val" /> -->
-        <!-- v-on = @; @ 符号是用来监听自定义事件的简写 -->
-        <!-- 对父组件意味着：
-             1. :modelValue="content" 是父组件将 content 作为 prop 传递给子组件 RichTextEditor; 
-             2. @update:modelValue="val => content = val" 是父组件监听子组件发出的 update:modelValue 事件，并将传递过来的 val 赋值给 content。 -->
-        <!-- 对子组件，这意味着：1.子组件要接收一个 modelValue 的 prop； 2. 子组件要通过 emit('update:modelValue', 新值) 来通知父组件更新值 -->
-        <!-- :modelValue="content" 是父组件出的 prop -->
-        <!-- 所以你子组件必须用 defineProps 来接收这个 modelValue -->
-        <!-- 这样，父组件和子组件之间就实现了双向绑定，父组件的 content 变量会随着子组件中内容的变化而自动更新。 -->
-      </el-form-item>
+        <el-form
+          class="form-wrapper"
+          label-position="top"
+          label-width="100px"
+          :model="form"
+          :rules="rules"
+          ref="formRef"
+        >
+          <el-form-item label="标题" prop="title">
+            <el-input v-model="form.title" placeholder="请输入文章标题" />
+          </el-form-item>
 
-      <!-- <el-button type="primary" @click="submitPost">发布</el-button> -->
-    </el-form>
-    {{ content }}
+          <el-form-item label="分类" prop="category">
+            <el-input v-model="form.category" placeholder="请输入文章分类" />
+          </el-form-item>
+
+          <el-form-item label="概述" prop="description">
+            <el-input v-model="form.description" placeholder="请输入文章概述" />
+          </el-form-item>
+
+          <el-form-item label="内容" class="editor-item">
+            <RichTextEditor v-model="form.content" />
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="submitPost">发布</el-button>
+          </el-form-item>
+        </el-form>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -44,39 +46,156 @@
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import RichTextEditor from "@/components/RichTextEditor.vue";
-// import { postBlog } from "@/net"; // 你需要自己实现这个 API
+// import { postBlog } from "@/net"; // Assuming you have this function for posting
 
-const title = ref("");
-const category = ref("");
-const content = ref("");
+const form = ref({
+  title: "",
+  category: "",
+  description: "",
+  content: "",
+});
+
+const formRef = ref(null);
+
+const rules = {
+  title: [
+    { required: true, message: "请输入标题", trigger: "blur" }
+  ],
+  category: [
+    { required: true, message: "请输入分类", trigger: "blur" }
+  ],
+  description: [
+    { required: true, message: "请输入概述", trigger: "blur" }
+  ],
+};
 
 const submitPost = () => {
-  if (!title.value || !content.value) {
-    ElMessage.warning("标题和内容不能为空");
-    return;
-  }
+  formRef.value?.validate((valid) => {
+    if (!valid) return;
 
-  postBlog(
-    {
-      title: title.value,
-      category: category.value,
-      content: content.value,
-    },
-    () => {
-      ElMessage.success("发布成功");
-      // 你可以选择跳转回主页或清空表单
+    if (!form.value.content) {
+      ElMessage.warning("内容不能为空");
+      return;
     }
-  );
+
+    postBlog(
+      {
+        title: form.value.title,
+        category: form.value.category,
+        description: form.value.description,
+        content: form.value.content,
+      },
+      () => {
+        ElMessage.success("发布成功");
+        // Optionally clear the form or navigate to another page
+      }
+    );
+  });
 };
 </script>
 
 <style scoped>
+.post-editor-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background-image: url("/images/main_back.jpg"); /* 背景图片路径 */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* 为 post-editor-container 添加遮罩 */
+.post-editor-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.1); /* 半透明深色遮罩 */
+  z-index: 0;
+}
+
 .post-editor {
+  width: 100%;
   max-width: 800px;
-  margin: 40px auto;
-  background: white;
-  padding: 40px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1; /* 确保编辑器内容在遮罩层之上 */
+}
+
+.form-card {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.form-wrapper {
+  display: flex;
+  margin-top: 20px;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.el-form-item {
+  margin-bottom: 16px;
+}
+
+.el-input,
+.el-button {
+  width: 100%;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.el-button {
+  background-color: #42b983;
+  border-color: #42b983;
+  color: white;
+  font-weight: bold;
+}
+
+.el-button:hover {
+  background-color: #3a9c76;
+  border-color: #3a9c76;
+}
+
+.editor-item {
+  margin-bottom: 16px;
+}
+
+.close-button {
+  all: unset; /* 清除所有继承样式 */
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  z-index: 10;
+  line-height: 1;
+  padding: 0 8px;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+
+
+/* 防止滚动条出现 */
+body, .post-editor-container {
+  overflow: hidden;
 }
 </style>

@@ -99,6 +99,17 @@ const props = defineProps({
 */
 const emit = defineEmits(["update:model-value"]);
 
+// 用来判断容器是否正常初始化完成（挂载完成），完成后再抛出emit事件
+let initFinished = false;
+
+// 等待10s后再初期化挂载，确保挂载的是父组件传来的值，而不是自身的默认内容（<p><br></p>）
+onMounted(() => {
+  setTimeout(() => {
+    valueHtml.value = props.modelValue;
+    initFinished = true;
+  }, 10)
+})
+
 // emit 是子组件向父组件“汇报数据变更”的唯一合法通道，是实现双向绑定的关键角色。
 // emit("update:model-value", valueHtml.value)：触发 update:model-value 事件，并将子组件的数据传递给父组件。
 // 通过 emit，子组件通知父组件“值已经更新”，并通过事件将更新后的值（valueHtml.value）传递给父组件。
@@ -109,7 +120,8 @@ const emit = defineEmits(["update:model-value"]);
   这是你代码里调用 emit 函数的地方。
 */
 const handleChange = (editor) => {
-  emit("update:model-value", valueHtml.value);
+  if(initFinished)
+    emit("update:model-value", valueHtml.value);
 };
 
 const handleCreated = (editor) => {
