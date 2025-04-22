@@ -1,11 +1,12 @@
 <template>
   <div class="post-editor-container">
     <div class="post-editor">
-      
       <el-card class="form-card">
         <!-- 头部 -->
         <!-- 替换掉原来的 back-link 部分 -->
-        <el-button class="close-button" link @click="$router.push('/')">×</el-button>
+        <el-button class="close-button" link @click="$router.push('/')"
+          >×</el-button
+        >
 
         <h1 class="page-title">新增文章</h1>
 
@@ -26,7 +27,12 @@
           </el-form-item>
 
           <el-form-item label="概述" prop="description">
-            <el-input v-model="form.description" placeholder="请输入文章概述" />
+            <el-input
+              type="textarea"
+              v-model="form.description"
+              placeholder="请输入文章概述"
+              :rows="3"
+            />
           </el-form-item>
 
           <el-form-item label="内容" class="editor-item">
@@ -36,6 +42,8 @@
           <el-form-item>
             <el-button type="primary" @click="submitPost">发布</el-button>
           </el-form-item>
+
+          {{ form.content }}
         </el-form>
       </el-card>
     </div>
@@ -46,7 +54,8 @@
 import { ref } from "vue";
 import { ElMessage } from "element-plus";
 import RichTextEditor from "@/components/RichTextEditor.vue";
-// import { postBlog } from "@/net"; // Assuming you have this function for posting
+import { postBlog } from "@/net";
+import router from "@/router";
 
 const form = ref({
   title: "",
@@ -58,15 +67,9 @@ const form = ref({
 const formRef = ref(null);
 
 const rules = {
-  title: [
-    { required: true, message: "请输入标题", trigger: "blur" }
-  ],
-  category: [
-    { required: true, message: "请输入分类", trigger: "blur" }
-  ],
-  description: [
-    { required: true, message: "请输入概述", trigger: "blur" }
-  ],
+  title: [{ required: true, message: "请输入标题", trigger: "blur" }],
+  category: [{ required: true, message: "请输入分类", trigger: "blur" }],
+  description: [{ required: true, message: "请输入概述", trigger: "blur" }],
 };
 
 const submitPost = () => {
@@ -86,8 +89,10 @@ const submitPost = () => {
         content: form.value.content,
       },
       () => {
-        ElMessage.success("发布成功");
-        // Optionally clear the form or navigate to another page
+        // 成功回调中不再需要提示
+        // 可执行跳转或清空表单
+        console.log("发布后动作，比如跳转首页");
+        router.replace("/"); // 替换当前路由为首页
       }
     );
   });
@@ -192,10 +197,9 @@ const submitPost = () => {
   color: #333;
 }
 
-
-
 /* 防止滚动条出现 */
-body, .post-editor-container {
+body,
+.post-editor-container {
   overflow: hidden;
 }
 </style>

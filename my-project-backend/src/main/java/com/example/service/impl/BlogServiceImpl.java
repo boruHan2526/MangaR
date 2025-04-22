@@ -22,4 +22,14 @@ public class BlogServiceImpl implements BlogService {
         return blogMapper.findByCategory(category);
     }
 
+    @Override
+    public Blog getBlogById(Long id) {
+        return blogMapper.getBlogById(id);
+    }
+
+    @Override
+    public void save(Blog blog) {
+        blogMapper.insert(blog);
+    }
+
 }

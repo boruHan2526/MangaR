@@ -14,6 +14,7 @@ const defaultError = (err) => {
     ElMessage.warning('发生了一些错误，请联系管理员')
 }
 
+// accessHeader()用于获取token
 function accessHeader() {
     const token = takeAccessToken();
 
@@ -104,9 +105,27 @@ function getBlogs(success, failure = defaultFailure) {
     get('/api/blogs', success, failure)
 }
 
+// 发布一篇博客文章
+function postBlog(data, success, failure = defaultFailure) {
+    post('/api/blogs/save', data, (res) => {
+        ElMessage.success('发布成功');
+        success(res);
+    }, failure);
+}
+
+// 获取特定卡片的详情
+function getCardById(id, success, failure = defaultFailure) {
+    get(`/api/cards/${id}`, success, failure)
+}
+
+// 获取特定博客文章详情
+function getBlogById(id, success, failure = defaultFailure) {
+    get(`/api/blogs/${id}`, success, failure)
+}
+
 // function getBlogsByCategory(category, success, failure = defaultFailure) {
 //     get(`/api/blogs/category/${category}`, success, failure)
 // }
 
 
-export {login, logout, get, post, unauthorized, getBlogs}
+export {login, logout, get, post, unauthorized, getBlogs, postBlog, accessHeader, getCardById, getBlogById}

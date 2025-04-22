@@ -17,4 +17,15 @@
         WHERE category = #{category}
     </select>
 
+    <!-- 插入一条博客记录 -->
+    <insert id="insert" parameterType="Blog">
+        INSERT INTO db_blogs (title, description, category, content)
+        VALUES (#{title}, #{description}, #{category}, #{content})
+    </insert>
+
+    <select id="getBlogById" resultType="Blog">
+        SELECT * FROM db_blogs WHERE id = #{id}
+    </select>
+
+
 </mapper>

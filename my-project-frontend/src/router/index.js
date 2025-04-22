@@ -19,7 +19,13 @@ const router = createRouter({
         {
             path: '/index',
             name: 'index',
-            component: () => import('@/views/indexView.vue')
+            component: () => import('@/views/indexView.vue'),
+        },
+        {
+            path: '/card/:id',  // 🆕 独立路由，不嵌套
+            name: 'CardDetail',
+            component: () => import('@/views/CardDetail.vue'),
+            props: true
         },
         {
             path: '/post',

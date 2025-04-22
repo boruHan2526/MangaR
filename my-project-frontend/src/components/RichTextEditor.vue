@@ -48,9 +48,76 @@ import {
 /* 引入编辑器与工具栏组件 */
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
 
+import { accessHeader } from "@/net";
+
+const server_url = inject("server_url");
 const editorRef = shallowRef();
 const toolbarConfig = {};
-const editorConfig = { placeholder: "请输入内容..." };
+const editorConfig = { placeholder: "Please enter..." };
+
+// 先执行 uploadImage 上传图片，然后执行 insertImage 插入图片。
+editorConfig.MENU_CONF = {};
+editorConfig.MENU_CONF["uploadImage"] = {
+  base64LimitSize: 10 * 1024,
+  server: server_url + "/api/upload/rich_editor_upload",
+  headers: accessHeader(), // 🔥 就是这里！
+  fieldName: "files", // 👈 加上这一句！告诉 wangeditor 用这个字段名上传 *wangeditor 默认上传字段名叫 "wangeditor-uploaded-image"。
+}; //<------------------- 该版本存在的问题是，选择五张图片是请求五次接口，而不是作为数组请求一次。虽然能满足批量上传图片的需要。但如果是合集本（如七夏乐园，打造坏坏小心机等500p长篇），估计会直接因为多次请求而挂掉（我自己攻击自己）
+
+/**
+实际流程图（简化）：
+点击上传按钮
+     ↓
+选择图片上传
+     ↓
+上传成功，后端返回 res
+     ↓
+→ 触发 customInsert(res, insertFn)
+     ↓
+→ insertFn(url)
+     ↓
+→ 自动触发 parseImageSrc(url)
+     ↓
+→ 加工完路径，插入 <img src="..."> 
+*/
+editorConfig.MENU_CONF["insertImage"] = {
+  // // customInsert 作用：自定义插入图片到编辑器内容中。
+  // // 何时触发：当你上传图片成功，后端返回结果后，就会执行这个函数。
+  // // customInsert 是负责插入的触发器
+  // customInsert(res, insertFn) {
+  //   console.log("✅ customInsert 被触发了！", res);
+  //   const urls = res.data.url;
+  //   if (Array.isArray(urls)) {
+  //     urls.forEach((url) => {
+  //       console.log("👀 插入图片：", url);
+  //       insertFn(url);
+  //     });
+  //   }
+  // }, <--------------------------- 这里不知道什么原因不被触发
+
+  // parseImageSrc  作用：用于格式化图片地址，确保是一个完整的 URL。
+  // 何时触发：当你使用 insertFn(url) 插入图片时，它会在插入前自动调用 parseImageSrc(src) 对路径做处理。
+  // parseImageSrc 是插入前的路径加工处理器
+  parseImageSrc(src) {
+    console.log("⚙️ parseImageSrc 被调用：", src);
+
+    // 如果 src 不是字符串，尝试将其转为字符串
+    if (typeof src !== "string") {
+      // 如果是数组或对象，转为字符串
+      src = src[0];
+    }
+
+    console.log(src);
+
+    // 如果 src 是有效字符串并且不是完整的 URL，则拼接服务器地址
+    if (!src.startsWith("https") && !src.startsWith("http")) {
+      return `${server_url}${src}`;
+    }
+
+    return src;
+  },
+};
+
 const mode = ref("default");
 
 const valueHtml = ref("");
@@ -107,8 +174,8 @@ onMounted(() => {
   setTimeout(() => {
     valueHtml.value = props.modelValue;
     initFinished = true;
-  }, 10)
-})
+  }, 10);
+});
 
 // emit 是子组件向父组件“汇报数据变更”的唯一合法通道，是实现双向绑定的关键角色。
 // emit("update:model-value", valueHtml.value)：触发 update:model-value 事件，并将子组件的数据传递给父组件。
@@ -120,8 +187,7 @@ onMounted(() => {
   这是你代码里调用 emit 函数的地方。
 */
 const handleChange = (editor) => {
-  if(initFinished)
-    emit("update:model-value", valueHtml.value);
+  if (initFinished) emit("update:model-value", valueHtml.value);
 };
 
 const handleCreated = (editor) => {

@@ -4,10 +4,7 @@ import com.example.entity.RestBean;
 import com.example.entity.dto.Blog;
 import com.example.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,6 +19,18 @@ public class BlogController {
     public RestBean<List<Blog>> getAllBlogs() {
         List<Blog> blogs = blogService.getAllBlogs();
         return RestBean.success(blogs);
+    }
+
+    @GetMapping("/{id}")
+    public RestBean<Blog> getBlogById(@PathVariable("id") Long id) {
+        Blog blog = blogService.getBlogById(id);
+        return RestBean.success(blog);
+    }
+
+    @PostMapping("/save")
+    public RestBean<String> saveBlog(@RequestBody Blog blog) {
+        blogService.save(blog);
+        return RestBean.success();
     }
 
     // 这个方法目前不会用到

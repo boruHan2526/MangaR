@@ -52,6 +52,7 @@ public class SecurityConfiguration {
         return http
                 .authorizeHttpRequests(conf -> conf
                         .requestMatchers("/api/auth/**").permitAll()    //带有该前缀的api无需校验即可访问
+                        .requestMatchers("/upload/**").permitAll()
                         .anyRequest().authenticated()   //其他api都需校验
                 )
                 .formLogin(conf -> conf

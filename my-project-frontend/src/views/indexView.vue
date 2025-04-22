@@ -71,7 +71,12 @@
             class="card-wrapper"
           >
             <!-- el-card 是 Element Plus 提供的卡片组件; shadow="hover" 表示鼠标悬停时会有阴影效果（很常用）; class="blog-card" 可以自己定义卡片样式（如宽度、内边距等） -->
-            <el-card shadow="hover" class="blog-card">
+            <el-card
+              shadow="hover"
+              class="blog-card"
+              @click="goToDetail(post.id)"
+            >
+              <!-- 💡 添加点击事件 -->
               <!-- 显示文章标题和描述; 使用了 Vue 的插值语法 {{ }} 绑定数据; class="desc" 是描述样式，可能是自定义字体大小、颜色、行距等 -->
               <h3>{{ post.title }}</h3>
               <p class="desc">{{ post.description }}</p>
@@ -147,6 +152,11 @@ const filteredPosts = computed(() =>
     return matchCategory;
   })
 );
+
+// 当你在文章卡片上点击时跳转到详情页
+const goToDetail = (id) => {
+  router.push(`/card/${id}`);
+};
 
 // 按照分类筛选
 const filterByCategory = (category) => {
@@ -310,6 +320,7 @@ body,
   flex-direction: column;
   justify-content: space-between; /* 让标题、描述和 footer 分布 */
   height: 190px; /* 填满父容器 */
+  cursor: pointer;
 }
 
 /* card在hover时更明显 */
