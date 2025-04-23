@@ -1,0 +1,38 @@
+spring:
+  # 上传图片（静态文件）设置
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+  # DB链接设置
+  datasource:
+    url: jdbc:mysql://localhost:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    username: root
+    password: root  # 笔记本root 主机123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+
+  # Druid 连接池配置
+  druid:
+    initial-size: 5       # 初始连接数
+    min-idle: 5           # 最小空闲连接数
+    max-active: 20        # 最大连接数
+    max-wait: 60000       # 获取连接的最大等待时间（单位：毫秒）
+
+# MyBatis 配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml # 指定 MyBatis 映射文件（Mapper XML） 的存放路径。 classpath: 表示资源文件夹 src/main/resources/。
+  type-aliases-package: com.example.entity.dto # 指定 MyBatis 实体类（JavaBean）所在的包。 MyBatis 提供了 typeAlias 机制，可以使用类名代替全路径类名。
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名自动映射 # 数据库字段 user_id -> Java 字段 userId
+    cache-enabled: false  # 关闭二级缓存
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 控制台输出 SQL 语句
+
+# SpringSecurity 配置
+security:
+  jwt:
+    key: abcdefg  # 加密密钥
+    expire: 7     # 7 days
+
+
+

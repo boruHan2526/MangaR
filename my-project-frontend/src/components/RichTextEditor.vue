@@ -203,4 +203,12 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style></style>
+<style>
+/* 作用于编辑器内部内容区域 */
+.w-e-text img {
+  display: block;         /* 每张图片独占一行 */
+  margin: 10px auto;      /* 上下间距、居中 */
+  max-width: 100%;        /* 防止图片过宽撑破容器 */
+  height: auto;
+}
+</style>

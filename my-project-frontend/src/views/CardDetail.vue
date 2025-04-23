@@ -165,11 +165,23 @@ h1 {
   color: #333;
 }
 
-.prose img {
+/* .prose img {
+  display: block;         
+  margin: 20px auto;      
+  max-width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+} */
+
+::v-deep(.prose img) {
+  display: block;         
+  margin: 2px auto;      
   max-width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+
 
 .prose a {
   color: #42b983;
