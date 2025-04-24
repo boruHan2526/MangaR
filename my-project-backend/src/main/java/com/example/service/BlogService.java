@@ -12,4 +12,6 @@ public interface BlogService {
     public  Blog getBlogById(Long id);
 
     void save(Blog blog);
+
+    List<Blog> getAllAltBlogs();
 }

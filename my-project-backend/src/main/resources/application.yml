@@ -5,7 +5,7 @@ spring:
   application:
     name: my-project-backend
   profiles:
-    active: dev # 每次启动时改这里，本地测试改为dev
+    active: prod # 每次启动时改这里，本地测试改为dev
                 # 本地测试时记得开redis
 
 

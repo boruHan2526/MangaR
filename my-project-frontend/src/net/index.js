@@ -105,6 +105,11 @@ function getBlogs(success, failure = defaultFailure) {
     get('/api/blogs', success, failure)
 }
 
+// 获取全部Blogs
+function getAltBlogs(success, failure = defaultFailure) {
+    get('/api/blogs/getAllAltBlogs', success, failure)
+}
+
 // 发布一篇博客文章
 function postBlog(data, success, failure = defaultFailure) {
     post('/api/blogs/save', data, (res) => {
@@ -128,4 +133,4 @@ function getBlogById(id, success, failure = defaultFailure) {
 // }
 
 
-export {login, logout, get, post, unauthorized, getBlogs, postBlog, accessHeader, getCardById, getBlogById}
+export {login, logout, get, post, unauthorized, getBlogs, postBlog, accessHeader, getCardById, getBlogById, getAltBlogs}

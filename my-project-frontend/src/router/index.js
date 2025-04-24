@@ -20,6 +20,7 @@ const router = createRouter({
             path: '/index',
             name: 'index',
             component: () => import('@/views/indexView.vue'),
+            meta: { keepAlive: true },
         },
         {
             path: '/card/:id',  // 🆕 独立路由，不嵌套

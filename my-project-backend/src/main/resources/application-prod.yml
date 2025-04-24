@@ -10,7 +10,7 @@ spring:
 
   # DB链接设置
   datasource:
-    url: jdbc:mysql://mysql:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://mysql:3306/mangdoca?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
     password: 123456
     driver-class-name: com.mysql.cj.jdbc.Driver

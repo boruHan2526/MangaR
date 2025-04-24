@@ -1,5 +1,13 @@
 <template>
-  <div class="common-layout">
+  <div
+    class="common-layout"
+    :style="{
+      backgroundImage: `url(${currentBg})`,
+      transition: sourceStore.disableAnimation
+        ? 'none'
+        : 'background-image 0.5s ease-in-out',
+    }"
+  >
     <!-- el-container 是 Element Plus 提供的布局容器 -->
     <el-container class="container">
       <!-- 顶部 header，固定高度 -->
@@ -92,7 +100,9 @@
       </el-main>
 
       <!-- 底部 footer，固定高度 -->
-      <el-footer class="footer">Made by BoruHan</el-footer>
+      <el-footer class="footer" @click="switchSource"
+        >Made by BoruHan</el-footer
+      >
     </el-container>
   </div>
 </template>
@@ -100,9 +110,16 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { More } from "@element-plus/icons-vue";
-import { logout, getBlogs } from "@/net";
+import { logout, getBlogs, getAltBlogs } from "@/net";
 import router from "@/router";
 import TimeText from "@/components/TimeText.vue"; // 时间格式化组件
+import { useSourceStore } from "@/store/useSourceStore";
+
+// 获取Pinia
+const sourceStore = useSourceStore();
+
+// // 新增 disableAnimation 响应式变量
+// const disableAnimation = ref(false);
 
 // activeIndex 是当前激活菜单项（默认选中 index 为 "1" 的菜单项）
 const activeIndex = ref("0");
@@ -113,11 +130,45 @@ const selectedCategory = ref(null);
 // 获取的博客
 const blogPosts = ref([]);
 
+// 是否切换了来源
+const isAltSource = computed(() => sourceStore.isAltSource);
+
+// **初始为空**，这样进详情页再回来，currentBg 会保留
+const currentBg = ref("");
+
 // 页面加载后自动拉取全部博客数据
+// onMounted(() => {
+//   getBlogs((data) => {
+//     blogPosts.value = data;
+//   });
+// });
+// onMounted 拉取博客时判断这个状态, 进入详情页后回来也能保持之前选择数据源和背景图
 onMounted(() => {
-  getBlogs((data) => {
-    blogPosts.value = data;
-  });
+  sourceStore.disableAnim(); //初始化时，禁用动画（通过页面跳转进入这个页面时）
+
+  // 计算应该用哪个背景
+  const newBg = sourceStore.isAltSource
+    ? "/images/alt_back.jpg"
+    : "/images/main_back.jpg";
+
+  // **只有 currentBg 还没有值（空串/undefined/null）时才赋**
+  if (!currentBg.value) {
+    currentBg.value = newBg;
+  }
+
+  if (sourceStore.isAltSource) {
+    getAltBlogs((data) => {
+      blogPosts.value = data;
+      // currentBg.value = "/images/alt_back.jpg";
+      // setTimeout(() => sourceStore.enableAnimation(), 0); // 恢复动画
+    });
+  } else {
+    getBlogs((data) => {
+      blogPosts.value = data;
+      // currentBg.value = "/images/main_back.jpg";
+      // setTimeout(() => sourceStore.enableAnimation(), 0); // 恢复动画
+    });
+  }
 });
 
 // 提取所有分类
@@ -155,7 +206,11 @@ const filteredPosts = computed(() =>
 
 // 当你在文章卡片上点击时跳转到详情页
 const goToDetail = (id) => {
-  router.push(`/card/${id}`);
+  router.push({
+    path: `/card/${id}`,
+    // 把背景图 url 放到 query 里
+    query: { bg: currentBg.value },
+  });
 };
 
 // 按照分类筛选
@@ -175,9 +230,34 @@ function goPost() {
   router.push("/post");
 }
 
+// 新增方法：切换数据源和背景
+const switchSource = () => {
+  sourceStore.toggleSource();
+  sourceStore.enableAnimation(); // 确保动画启用（切换数据源时，开启动画【不涉及页面跳转】）
+
+  // 根据新的状态拉取数据
+  if (sourceStore.isAltSource) {
+    getAltBlogs((data) => {
+      blogPosts.value = data;
+      currentBg.value = "/images/alt_back.jpg";
+    });
+  } else {
+    getBlogs((data) => {
+      blogPosts.value = data;
+      currentBg.value = "/images/main_back.jpg";
+    });
+  }
+};
+
 // 登出系统
 function userLogout() {
-  logout(() => router.push("/"));
+  logout(() => {
+    // 重置各个 store
+    sourceStore.resetAll();
+
+    // 最后再路由跳转
+    router.push("/");
+  });
 }
 </script>
 

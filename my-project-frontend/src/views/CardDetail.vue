@@ -1,5 +1,12 @@
 <template>
-  <div class="detail-page">
+  <div
+    class="detail-page"
+    :style="{
+      backgroundImage: `url(${bgUrl})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }"
+  >
     <n-button
       type="primary"
       strong
@@ -37,6 +44,10 @@ import TimeText from "@/components/TimeText.vue"; // 时间格式化组件
 
 const route = useRoute(); // 获取 Vue Route 实例
 const router = useRouter(); // 获取 Vue Router 实例
+
+// 从 query 里拿 bg，没有就用默认
+const bgUrl = ref(route.query.bg || "/images/main_back.jpg");
+
 const blog = ref({
   title: "",
   description: "",
@@ -77,9 +88,9 @@ const back = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url("/images/main_back.jpg");
+  /* background-image: url("/images/main_back.jpg");
   background-size: cover;
-  background-position: center;
+  background-position: center; */
   overflow: hidden; /* 隐藏外层滚动条 */
 }
 
@@ -174,14 +185,12 @@ h1 {
 } */
 
 ::v-deep(.prose img) {
-  display: block;         
-  margin: 2px auto;      
+  display: block;
+  margin: 2px auto;
   max-width: 100%;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
-
-
 
 .prose a {
   color: #42b983;

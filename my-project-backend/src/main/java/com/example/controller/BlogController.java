@@ -21,6 +21,12 @@ public class BlogController {
         return RestBean.success(blogs);
     }
 
+    @GetMapping("/getAllAltBlogs")
+    public RestBean<List<Blog>> getAllAltBlogs() {
+        List<Blog> blogs = blogService.getAllAltBlogs();
+        return RestBean.success(blogs);
+    }
+
     @GetMapping("/{id}")
     public RestBean<Blog> getBlogById(@PathVariable("id") Long id) {
         Blog blog = blogService.getBlogById(id);
