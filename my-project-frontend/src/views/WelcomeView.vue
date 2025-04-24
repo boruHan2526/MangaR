@@ -19,13 +19,9 @@
 
     <!-- 欢迎标题 -->
     <div class="welcome-title">
-      <div style="font-family: STLiti; font-size: 30px">欢迎来到 聆鸢茶馆</div>
-      <div style="margin-top: 10px; font-family: FZShuTi; font-size: 20px">
-        喝我这杯七星茶 分文不取
-      </div>
-      <div style="margin-top: 5px; font-family: FZShuTi; font-size: 20px">
-        听他摆那龙门阵 再饮三盅
-      </div>
+      <div class="title-main">欢迎来到 聆鸢茶馆</div>
+      <div class="title-sub01">喝我这杯七星茶 分文不取</div>
+      <div class="title-sub02">听他摆那龙门阵 再饮三盅</div>
     </div>
 
     <!-- 右侧卡片区域 -->
@@ -38,6 +34,7 @@
 <script setup lang="ts"></script>
 
 <style>
+@import url("https://fonts.googleapis.com/css2?family=Long+Cang&family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap");
 .welcome-title {
   position: absolute;
   bottom: 30px;
@@ -64,5 +61,28 @@
     rgba(255, 255, 255, 0.6)
   );
   margin-left: auto; /* 让卡片右对齐 */
+}
+
+.title-main {
+  font-family: "Long Cang", cursive;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 30px;
+}
+
+.title-sub01 {
+  margin-top: 10px;
+  font-family: "ZCOOL XiaoWei", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
+}
+
+.title-sub02 {
+  margin-top: 5px;
+  font-family: "ZCOOL XiaoWei", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 20px;
 }
 </style>

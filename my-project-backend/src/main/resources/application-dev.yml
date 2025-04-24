@@ -8,7 +8,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
-    password: root  # 笔记本root 主机123456
+    password: 123456  # 笔记本root 主机123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
