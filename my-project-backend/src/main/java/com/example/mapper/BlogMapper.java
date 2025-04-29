@@ -12,8 +12,13 @@ public interface BlogMapper {
     List<Blog> findAllAlt();
 
     List<Blog> findByCategory(String category);
+
     // 插入一个blog
     void insert(Blog blog);
+
+    // 根据ID更新blog
+    void update(Long id, Blog blog);
+
     // 根据ID查找Blog
     Blog getBlogById(Long id);
 }

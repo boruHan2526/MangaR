@@ -36,6 +36,11 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
+    public void update(Long id, Blog blog) {
+        blogMapper.update(id, blog);
+    }
+
+    @Override
     public List<Blog> getAllAltBlogs() {
         return blogMapper.findAllAlt();
     }

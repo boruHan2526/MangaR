@@ -118,6 +118,14 @@ function postBlog(data, success, failure = defaultFailure) {
     }, failure);
 }
 
+// 编辑一篇博客文章
+function editBlog(id, data, success, failure = defaultFailure) {
+    post(`/api/blogs/update/${id}`, data, (res) => {
+        ElMessage.success('更新成功');
+        success(res);
+    }, failure);
+}
+
 // 获取特定卡片的详情
 function getCardById(id, success, failure = defaultFailure) {
     get(`/api/cards/${id}`, success, failure)
@@ -133,4 +141,4 @@ function getBlogById(id, success, failure = defaultFailure) {
 // }
 
 
-export {login, logout, get, post, unauthorized, getBlogs, postBlog, accessHeader, getCardById, getBlogById, getAltBlogs}
+export {login, logout, get, post, unauthorized, getBlogs, postBlog, accessHeader, getCardById, getBlogById, getAltBlogs, editBlog}

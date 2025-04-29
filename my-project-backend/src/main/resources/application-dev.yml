@@ -2,13 +2,14 @@ spring:
   # 上传图片（静态文件）设置
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 100MB
+      max-file-size: 100MB
+      max-request-size: 200MB
+
   # DB链接设置
   datasource:
     url: jdbc:mysql://localhost:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
-    password: 123456  # 笔记本root 主机123456
+    password: root # 笔记本root 主机123456
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
@@ -33,6 +34,7 @@ security:
   jwt:
     key: abcdefg  # 加密密钥
     expire: 7     # 7 days
+
 
 
 

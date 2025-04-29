@@ -4,20 +4,12 @@
       <el-card class="form-card">
         <!-- 头部 -->
         <!-- 替换掉原来的 back-link 部分 -->
-        <el-button class="close-button" link @click="$router.push('/')"
-          >×</el-button
-        >
+        <el-button class="close-button" link @click="$router.push('/')">×</el-button>
 
-        <h1 class="page-title">新增文章</h1>
+        <h1 class="page-title">{{ isEdit ? '编辑文章' : '新建文章' }}</h1>
 
-        <el-form
-          class="form-wrapper"
-          label-position="top"
-          label-width="100px"
-          :model="form"
-          :rules="rules"
-          ref="formRef"
-        >
+        <el-form class="form-wrapper" label-position="top" label-width="100px" :model="form" :rules="rules"
+          ref="formRef">
           <el-form-item label="标题" prop="title">
             <el-input v-model="form.title" placeholder="请输入文章标题" />
           </el-form-item>
@@ -27,12 +19,7 @@
           </el-form-item>
 
           <el-form-item label="概述" prop="description">
-            <el-input
-              type="textarea"
-              v-model="form.description"
-              placeholder="请输入文章概述"
-              :rows="3"
-            />
+            <el-input type="textarea" v-model="form.description" placeholder="请输入文章概述" :rows="3" />
           </el-form-item>
 
           <el-form-item label="内容" class="editor-item">
@@ -40,7 +27,7 @@
           </el-form-item>
 
           <el-form-item>
-            <el-button type="primary" @click="submitPost">发布</el-button>
+            <el-button type="primary" @click="submitPost">{{ isEdit ? '更新' : '发布' }}</el-button>
           </el-form-item>
 
           {{ form.content }}
@@ -51,12 +38,19 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { ElMessage } from "element-plus";
 import RichTextEditor from "@/components/RichTextEditor.vue";
-import { postBlog } from "@/net";
-import router from "@/router";
+import { postBlog, getBlogById, editBlog } from "@/net";
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
+
+// 判断是否编辑模式
+const isEdit = computed(() => !!route.params.id);
+
+const formRef = ref(null);
 const form = ref({
   title: "",
   category: "",
@@ -64,7 +58,15 @@ const form = ref({
   content: "",
 });
 
-const formRef = ref(null);
+// 如果是编辑，挂载时拉取文章数据
+onMounted(() => {
+  if (isEdit.value) {
+    getBlogById(route.params.id, data => {
+      form.value = { ...data };
+      // form.content = { ...data }.content
+    });
+  }
+});
 
 const rules = {
   title: [{ required: true, message: "请输入标题", trigger: "blur" }],
@@ -81,32 +83,49 @@ const submitPost = () => {
       return;
     }
 
-    postBlog(
-      {
+    if (isEdit.value) {
+      editBlog(route.params.id, {
         title: form.value.title,
         category: form.value.category,
         description: form.value.description,
         content: form.value.content,
-      },
-      () => {
-        // 成功回调中不再需要提示
-        // 可执行跳转或清空表单
-        console.log("发布后动作，比如跳转首页");
-        router.replace("/"); // 替换当前路由为首页
-      }
-    );
+      }, () => {
+        router.replace("/");
+      })
+      // console.log(route.params.id)
+    }
+    else {
+      postBlog(
+        {
+          title: form.value.title,
+          category: form.value.category,
+          description: form.value.description,
+          content: form.value.content,
+        },
+        () => {
+          // 成功回调中不再需要提示
+          // 可执行跳转或清空表单
+          console.log("发布后动作，比如跳转首页");
+          router.replace("/"); // 替换当前路由为首页
+        }
+      );
+    }
+
   });
 };
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+
 .post-editor-container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   padding: 20px;
-  background-image: url("/images/main_back.jpg"); /* 背景图片路径 */
+  background-image: url("/images/main_back.jpg");
+  /* 背景图片路径 */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -118,7 +137,8 @@ const submitPost = () => {
   content: "";
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.1); /* 半透明深色遮罩 */
+  background-color: rgba(0, 0, 0, 0.1);
+  /* 半透明深色遮罩 */
   z-index: 0;
 }
 
@@ -129,7 +149,8 @@ const submitPost = () => {
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: relative;
-  z-index: 1; /* 确保编辑器内容在遮罩层之上 */
+  z-index: 1;
+  /* 确保编辑器内容在遮罩层之上 */
 }
 
 .form-card {
@@ -141,7 +162,9 @@ const submitPost = () => {
 
 .page-title {
   font-size: 24px;
-  font-weight: bold;
+  font-family: "ZCOOL KuaiLe", sans-serif;
+  font-weight: 400;
+  font-style: normal;
   color: #333;
   margin: 0;
 }
@@ -181,7 +204,8 @@ const submitPost = () => {
 }
 
 .close-button {
-  all: unset; /* 清除所有继承样式 */
+  all: unset;
+  /* 清除所有继承样式 */
   position: absolute;
   top: 20px;
   right: 20px;

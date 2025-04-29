@@ -13,5 +13,7 @@ public interface BlogService {
 
     void save(Blog blog);
 
+    void update(Long id, Blog blog);
+
     List<Blog> getAllAltBlogs();
 }

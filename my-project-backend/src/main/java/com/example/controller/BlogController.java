@@ -33,6 +33,16 @@ public class BlogController {
         return RestBean.success(blog);
     }
 
+    @PostMapping("/update/{id}")
+    public RestBean<String> updateBlog(
+            @PathVariable Long id,
+            @RequestBody Blog blog) {
+
+        blogService.update(id, blog); // 调用 Service 层进行更新
+        return RestBean.success("更新成功");
+    }
+
+
     @PostMapping("/save")
     public RestBean<String> saveBlog(@RequestBody Blog blog) {
         blogService.save(blog);

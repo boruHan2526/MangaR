@@ -44,6 +44,7 @@ import {
   onMounted,
   shallowRef,
   onBeforeUnmount,
+  watch
 } from "vue";
 /* 引入编辑器与工具栏组件 */
 import { Editor, Toolbar } from "@wangeditor/editor-for-vue";
@@ -58,6 +59,8 @@ const editorConfig = { placeholder: "Please enter..." };
 // 先执行 uploadImage 上传图片，然后执行 insertImage 插入图片。
 editorConfig.MENU_CONF = {};
 editorConfig.MENU_CONF["uploadImage"] = {
+  // 100MB 限制
+  maxFileSize: 100 * 1024 * 1024,
   base64LimitSize: 10 * 1024,
   server: server_url + "/api/upload/rich_editor_upload",
   headers: accessHeader(), // 🔥 就是这里！
@@ -176,6 +179,15 @@ onMounted(() => {
     initFinished = true;
   }, 10);
 });
+
+// **在你的 RichTextEditor.vue（也就是上面那段 wangEditor 封装）里面，加一个 watch，让它在外层 modelValue 变了的时候，同步更新内部的 valueHtml。例如：**：
+watch(
+  () => props.modelValue,
+  (newVal) => {
+    // 每次父组件 form.content 更新，都会进来
+    valueHtml.value = newVal;
+  }
+);
 
 // emit 是子组件向父组件“汇报数据变更”的唯一合法通道，是实现双向绑定的关键角色。
 // emit("update:model-value", valueHtml.value)：触发 update:model-value 事件，并将子组件的数据传递给父组件。

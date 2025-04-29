@@ -25,6 +25,19 @@
         WHERE category = #{category}
     </select>
 
+    <!-- 根据ID更新Blog -->
+    <!-- MyBatis 在遇到多个参数时，会自动将它们打包进一个 Map<String, Object>，键是你用 @Param 注解定义的参数名（比如 "id" 和 "blog"），值是对应的对象。于是你就可以在 XML 中用 #{id} 和 #{blog.title} 这样的表达方式。 -->
+    <update id="update">
+        UPDATE
+            db_blogs
+        SET
+            title = #{blog.title},
+            category = #{blog.category},
+            description = #{blog.description},
+            content = #{blog.content}
+        WHERE id = #{id}
+    </update>
+
     <!-- 插入一条博客记录 -->
     <!-- 动态SQL -->
     <insert id="insert" parameterType="Blog">
