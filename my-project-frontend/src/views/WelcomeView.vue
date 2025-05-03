@@ -19,9 +19,9 @@
 
     <!-- 欢迎标题 -->
     <div class="welcome-title">
-      <div class="title-main">欢迎来到 聆鸢茶馆</div>
-      <div class="title-sub01">喝我这杯七星茶 分文不取</div>
-      <div class="title-sub02">听他摆那龙门阵 再饮三盅</div>
+      <div class="title-main">{{ $t('message.welcomeTitle') }}</div>
+      <div class="title-sub01">{{ $t('message.welcomeContent01') }}</div>
+      <div class="title-sub02">{{ $t('message.welcomeContent02') }}</div>
     </div>
 
     <!-- 右侧卡片区域 -->

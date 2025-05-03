@@ -83,7 +83,7 @@
       </el-main>
 
       <!-- 底部 footer，固定高度 -->
-      <el-footer class="footer" @click="switchSource">Made by BoruHan</el-footer>
+      <el-footer class="footer" @click="confirmBeforeSwitch">Made by BoruHan</el-footer>
     </el-container>
   </div>
 </template>
@@ -95,6 +95,7 @@ import { logout, getBlogs, getAltBlogs } from "@/net";
 import router from "@/router";
 import TimeText from "@/components/TimeText.vue"; // 时间格式化组件
 import { useSourceStore } from "@/store/useSourceStore";
+import { ElMessage } from "element-plus";  // 用于提示
 
 // 获取Pinia
 const sourceStore = useSourceStore();
@@ -234,6 +235,34 @@ const switchSource = () => {
     });
   }
 };
+
+function confirmBeforeSwitch() {
+  const pwd = window.prompt("请输入密码以切换里/表站：");
+  if (pwd === "114514") {
+    switchSource();
+    ElMessage.success("SUCCESS！");
+  } else {
+    ElMessage.error("密码不正确！");
+  }
+  /**
+   * window.prompt() 是浏览器提供的一个同步弹窗方法，用来让用户输入简单的文本。它的基本用法和参数如下：
+        const result = window.prompt(message, defaultValue);
+      
+    message （必填，字符串）
+      要显示在弹窗中的提示文字，例如 "请输入密码："。如果传入非字符串值，会被自动转成字符串。
+    defaultValue （可选，字符串）
+      输入框中预先填入的默认值，用户可以直接修改或使用该默认值。如果不传或传 undefined，输入框则为空。
+
+    【Details】
+    阻塞执行
+      prompt 是同步的：脚本会暂停在这一行，直到用户点击「确定」或「取消」并关闭弹窗后才继续执行后续代码。
+    返回值
+      如果用户在输入框中输入内容并点击「确定」，返回该字符串（即用户输入的文本）。
+      如果用户点击「取消」或关闭弹窗，返回 null。
+    浏览器兼容性
+      window.prompt 在几乎所有现代浏览器中都支持，但外观和按钮文案可能因浏览器而异，且无法自定义弹窗样式。
+   */
+}
 
 // 登出系统
 function userLogout() {
