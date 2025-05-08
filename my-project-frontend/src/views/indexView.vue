@@ -1,10 +1,13 @@
 <template>
-  <div class="common-layout" :style="{
-    backgroundImage: `url(${currentBg})`,
-    transition: sourceStore.disableAnimation
-      ? 'none'
-      : 'background-image 0.5s ease-in-out',
-  }">
+  <div
+    class="common-layout"
+    :style="{
+      backgroundImage: `url(${currentBg})`,
+      transition: sourceStore.disableAnimation
+        ? 'none'
+        : 'background-image 0.5s ease-in-out',
+    }"
+  >
     <!-- el-container 是 Element Plus 提供的布局容器 -->
     <el-container class="container">
       <!-- 顶部 header，固定高度 -->
@@ -17,8 +20,14 @@
           menu-trigger="click"                  // 子菜单打开的触发方式，只在 mode 为 horizontal 时有效。
           @select="handleSelect"                // 选中菜单项时触发的方法
         -->
-        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" :ellipsis="false"
-          menu-trigger="click" @select="handleSelect">
+        <el-menu
+          :default-active="activeIndex"
+          class="el-menu-demo"
+          mode="horizontal"
+          :ellipsis="false"
+          menu-trigger="click"
+          @select="handleSelect"
+        >
           <!-- 显示“Home”字样; 点击回到主页 -->
           <!-- index="0" 是它的标识（每个项都需要有 index） -->
           <el-menu-item index="0" @click="resetFilter">Home</el-menu-item>
@@ -32,7 +41,12 @@
           <!-- 多级下拉菜单:分类菜单 -->
           <el-sub-menu index="1">
             <template #title>分类</template>
-            <el-menu-item v-for="cat in categories" :key="cat" :index="cat" @click="filterByCategory(cat)">
+            <el-menu-item
+              v-for="cat in categories"
+              :key="cat"
+              :index="cat"
+              @click="filterByCategory(cat)"
+            >
               {{ cat }}
             </el-menu-item>
           </el-sub-menu>
@@ -47,7 +61,10 @@
               </span>
             </template>
             <el-menu-item index="2-1">进入管理系统</el-menu-item>
-            <el-menu-item index="2-2" @click="userLogout()">退出系统</el-menu-item>
+            <el-menu-item index="2-2" @click="goGame()">Game Demo</el-menu-item>
+            <el-menu-item index="2-3" @click="userLogout()"
+              >退出系统</el-menu-item
+            >
           </el-sub-menu>
         </el-menu>
       </el-header>
@@ -58,12 +75,27 @@
         <!-- el-row 是栅格系统的一行，用来放多个列（el-col）; :gutter="20" 表示每个列之间有 20 像素的水平间距（左右 margin）; 作用：可以让多个博客卡片在同一行均匀分布，有间距 -->
         <el-row :gutter="20">
           <!-- el-col 是列，占据一行的 8/24 = 1/3（Element Plus 一行是 24 格）; v-for="post in filteredPosts" 是 Vue 的 for 循环，遍历博客列表; :key="post.id" 是为了提高渲染性能，必须加（Vue 要求） -->
-          <el-col :span="8" v-for="post in filteredPosts" :key="post.id" class="card-wrapper">
+          <el-col
+            :span="8"
+            v-for="post in filteredPosts"
+            :key="post.id"
+            class="card-wrapper"
+          >
             <!-- el-card 是 Element Plus 提供的卡片组件; shadow="hover" 表示鼠标悬停时会有阴影效果（很常用）; class="blog-card" 可以自己定义卡片样式（如宽度、内边距等） -->
-            <el-card shadow="hover" class="blog-card" @click="goToDetail(post.id)">
+            <el-card
+              shadow="hover"
+              class="blog-card"
+              @click="goToDetail(post.id)"
+            >
               <!-- 编辑按钮，阻止冒泡以避免触发 goToDetail -->
-              <el-button class="edit-btn" type="text" size="big" icon="el-icon-edit"
-                @click.stop="goToEdit(post.id)">変更</el-button>
+              <el-button
+                class="edit-btn"
+                type="text"
+                size="big"
+                icon="el-icon-edit"
+                @click.stop="goToEdit(post.id)"
+                >変更</el-button
+              >
 
               <!-- 💡 添加点击事件 -->
               <!-- 显示文章标题和描述; 使用了 Vue 的插值语法 {{ }} 绑定数据; class="desc" 是描述样式，可能是自定义字体大小、颜色、行距等 -->
@@ -83,7 +115,9 @@
       </el-main>
 
       <!-- 底部 footer，固定高度 -->
-      <el-footer class="footer" @click="confirmBeforeSwitch">Made by BoruHan</el-footer>
+      <el-footer class="footer" @click="confirmBeforeSwitch"
+        >Made by BoruHan</el-footer
+      >
     </el-container>
   </div>
 </template>
@@ -95,7 +129,7 @@ import { logout, getBlogs, getAltBlogs } from "@/net";
 import router from "@/router";
 import TimeText from "@/components/TimeText.vue"; // 时间格式化组件
 import { useSourceStore } from "@/store/useSourceStore";
-import { ElMessage } from "element-plus";  // 用于提示
+import { ElMessage } from "element-plus"; // 用于提示
 
 // 获取Pinia
 const sourceStore = useSourceStore();
@@ -236,6 +270,12 @@ const switchSource = () => {
   }
 };
 
+// 进入game页面
+function goGame() {
+  router.push("/game");
+}
+
+// 输入密码切换里/表站
 function confirmBeforeSwitch() {
   const pwd = window.prompt("请输入密码以切换里/表站：");
   if (pwd === "114514") {
@@ -391,7 +431,7 @@ body,
 }
 
 /* 移除 el-menu 横向菜单项的蓝色下划线 */
-.el-menu--horizontal>.el-menu-item.is-active {
+.el-menu--horizontal > .el-menu-item.is-active {
   border-bottom: none !important;
   /* 去除蓝色下划线 */
   background-color: rgba(255, 255, 255, 0.35) !important;
@@ -400,7 +440,7 @@ body,
 }
 
 /* 同样适用于子菜单选中 */
-.el-menu--horizontal>.el-sub-menu.is-active .el-sub-menu__title {
+.el-menu--horizontal > .el-sub-menu.is-active .el-sub-menu__title {
   border-bottom: none !important;
   background-color: rgba(255, 255, 255, 0.35) !important;
   color: white !important;

@@ -23,6 +23,11 @@ const router = createRouter({
       meta: { keepAlive: true },
     },
     {
+      path: "/game",
+      name: "Game",
+      component: () => import("@/views/game/gameIndex.vue"),
+    },
+    {
       path: "/card/:id", // 🆕 独立路由，不嵌套
       name: "CardDetail",
       component: () => import("@/views/CardDetail.vue"),
