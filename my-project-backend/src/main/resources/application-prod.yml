@@ -10,9 +10,9 @@ spring:
 
   # DB链接设置
   datasource:
-    url: jdbc:mysql://mysql:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
+    url: jdbc:mysql://38.22.90.169:3306/manga?useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
-    password: 123456
+    password: YourPassword123!
     driver-class-name: com.mysql.cj.jdbc.Driver
     type: com.alibaba.druid.pool.DruidDataSource
 
